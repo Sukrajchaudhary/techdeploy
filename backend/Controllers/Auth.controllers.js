@@ -4,8 +4,7 @@ const { SendMail } = require("../utils/Nodemailer");
 exports.CreateEmployee = async (req, res) => {
   try {
     const { username, email, password } = req.body;
-    console.log(req.body);
-    if ([username, email, password].some((field) => !field)) {
+       if ([username, email, password].some((field) => !field)) {
       return res.status(400).json({ message: "All fields is required !!" });
     }
     // cheching existing users

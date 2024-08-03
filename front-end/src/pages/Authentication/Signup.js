@@ -1,12 +1,12 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, Navigate } from "react-router-dom";
 import { LoaderCircle, Eye, EyeOff } from "lucide-react";
 import useSignupContext from "../../hooks/useSignupContext";
 import toast from "react-hot-toast";
 
 const Signup = () => {
-  const [Validationerror, setError] = useState({});
-  const { loading, data, error, signup } = useSignupContext();
+  const [validationError, setValidationError] = useState({});
+  const { loading, data, error, signup, setErrors } = useSignupContext();
 
   const [value, setValue] = useState({
     username: "",
@@ -19,55 +19,51 @@ const Signup = () => {
   const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
 
   // Validation function
-  const validate = useCallback(
-    ({ username, email, password, confirmPassword }) => {
-      const errorobj = {};
+  const validate = ({ username, email, password, confirmPassword }) => {
+    const errorObj = {};
 
-      if (username === "") {
-        errorobj.username = "Please Enter Your Username";
-      } else if (username.length < 4) {
-        errorobj.username = "Username must be at least 4 characters";
+    if (!username) {
+      errorObj.username = "Please Enter Your Username";
+    }
+    if (username.length <= 4) {
+      errorObj.username = "Username must be greate than 4 characters";
+    }
+
+    if (!email) {
+      errorObj.email = "Please Enter your Email";
+    } else {
+      const emailRegx =/^[\w\.-]+@[a-zA-Z\d\.-]+\.[a-zA-Z]{2,6}$/;
+      if (!emailRegx.test(email)) {
+        errorObj.email = "Please enter a valid email address";
       }
+    }
 
-      if (email === "") {
-        errorobj.email = "Please Enter your Email";
-      } else {
-        const emailRegx = /^[\w\.-]+@[a-zA-Z\d\.-]+\.[a-zA-Z]{2,6}$/;
-        if (!emailRegx.test(email)) {
-          errorobj.email = "Please enter a valid email address";
-        }
+    if (!password) {
+      errorObj.password = "Please Enter your password";
+    } else {
+      const passwordRegx =
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+      if (!passwordRegx.test(password)) {
+        errorObj.password =
+          "Password must be at least 8 characters long, and include at least one uppercase letter, one lowercase letter, one number, and one special character";
       }
+    }
 
-      if (password === "") {
-        errorobj.password = "Please Enter your password";
-      } else {
-        const passwordRegx =
-          /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-        if (!passwordRegx.test(password)) {
-          errorobj.password =
-            "Password must be at least 8 characters long, and include at least one uppercase letter, one lowercase letter, one number, and one special character";
-        }
-      }
+    if (confirmPassword !== password) {
+      errorObj.confirmPassword = "Password and Confirm password don't match";
+    }
 
-      if (confirmPassword !== password) {
-        errorobj.confirmPassword = "Password and Confirm password don't match";
-      }
-
-      setError(errorobj);
-      return Object.keys(errorobj).length === 0;
-    },
-    []
-  );
+    setValidationError(errorObj);
+    return Object.keys(errorObj).length === 0;
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setValue((prevValue) => {
       const newValue = { ...prevValue, [name]: value };
-      // Only validate if there are changes
-
       return newValue;
     });
-    setError({ ...Validationerror, [name]: "" });
+    setValidationError((prevErrors) => ({ ...prevErrors, [name]: "" }));
   };
 
   const handleSubmit = (e) => {
@@ -81,14 +77,16 @@ const Signup = () => {
   useEffect(() => {
     if (error) {
       toast.error(error);
+      setErrors("");
     }
-  }, [error]);
-
-  useEffect(() => {
     if (data) {
       toast.success(data?.message);
+      setErrors("");
     }
-  }, [data]);
+    return () => {
+      setErrors("");
+    };
+  }, [error, data]);
 
   return (
     <>
@@ -123,7 +121,7 @@ const Signup = () => {
                   className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border rounded-lg dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40"
                 />
                 <p className="text-red-500 text-sm">
-                  {Validationerror.username}
+                  {validationError.username}
                 </p>
               </div>
               <div>
@@ -141,7 +139,7 @@ const Signup = () => {
                   placeholder="Enter your email"
                   className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border rounded-lg dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40"
                 />
-                <p className="text-red-500 text-sm">{Validationerror.email}</p>
+                <p className="text-red-500 text-sm">{validationError.email}</p>
               </div>
               <div className="mt-4">
                 <div className="flex items-center justify-between">
@@ -174,7 +172,7 @@ const Signup = () => {
                   </button>
                 </div>
                 <p className="text-red-500 text-sm">
-                  {Validationerror.password}
+                  {validationError.password}
                 </p>
               </div>
               <div className="mt-4">
@@ -210,7 +208,7 @@ const Signup = () => {
                   </button>
                 </div>
                 <p className="text-red-500 text-sm">
-                  {Validationerror.confirmPassword}
+                  {validationError.confirmPassword}
                 </p>
               </div>
               <div className="mt-6">

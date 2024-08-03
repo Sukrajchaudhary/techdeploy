@@ -1,4 +1,5 @@
 const { Employee } = require("../Models/Employee.models");
+// getOwninformation
 exports.getOwnInfo = async (req, res) => {
   try {
     const { id } = req.user;
@@ -37,14 +38,18 @@ exports.deleteEmployee = async (req, res) => {
 };
 
 //getAll employee
-exports.getAllEmployee=async(_,res)=>{
+exports.getAllEmployee = async (req, res) => {
   try {
-    const employee= await Employee.find().select("-password -accessToken");
-    if(!employee){
-      return res.status(400).json({message:"No any Employee Yet"});
+  
+    const {id} = req.user || [];
+    const employee = await Employee.find({ _id: { $nin: id } }).select("-password -accessToken");
+    const totalEmployees = await Employee.countDocuments({ _id: { $nin: id } });
+    if (!employee || employee.length === 0) {
+      return res.status(400).json({ message: "No employees found" });
     }
-    return res.status(200).json({employee,status:true})
+    return res.status(200).json({ employee, status: true, total: totalEmployees });
   } catch (error) {
-    return res.status(400).json(error.message)
+    return res.status(400).json({ message: error.message });
   }
-}
+};
+

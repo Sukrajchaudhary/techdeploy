@@ -30,9 +30,7 @@ const employeeSchema = new Schema({
     type: String,
     default: "Employee",
   },
-  verifyAccountOTP:{
-    type:String,
-  },
+ 
   accessToken:{
     type:String
   }

@@ -1,16 +1,25 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { getEmployeeInfo, getAllEmployee, updatePassword, logot, resetPasswordLink,setNewPassword } from "./employeeAPI";
+import {
+  getEmployeeInfo,
+  getAllEmployee,
+  updatePassword,
+  logot,
+  resetPasswordLink,
+  setNewPassword,
+  deleteEmployee,
+} from "./employeeAPI";
 
 const initialState = {
   status: "idle",
   employees: null,
   error: null,
   isLoading: false,
-  allemployee: null,
+  allemployee: [],
   passwordUpdateMessage: null,
   isLogout: false,
   resetPasswordLinkStatus: null,
-  resetPasswordStatus:null
+  resetPasswordStatus: null,
+  deleteEmployee: null,
 };
 
 export const getEmployeeInfoAsync = createAsyncThunk(
@@ -40,7 +49,6 @@ export const getAllEmployeeAsync = createAsyncThunk(
 export const updatePasswordAsync = createAsyncThunk(
   "employee/updatePassword",
   async (values, { rejectWithValue }) => {
-   
     try {
       const response = await updatePassword(values);
       return response.data;
@@ -73,11 +81,24 @@ export const setNewPasswordAsync = createAsyncThunk(
     }
   }
 );
+
 export const logotAsync = createAsyncThunk(
   "employee/logot",
   async (_, { rejectWithValue }) => {
     try {
       const response = await logot();
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error);
+    }
+  }
+);
+
+export const deleteEmployeeAsync = createAsyncThunk(
+  "employee/deleteEmployee",
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await deleteEmployee(id);
       return response.data;
     } catch (error) {
       return rejectWithValue(error);
@@ -92,7 +113,9 @@ export const employeeSlice = createSlice({
     resetMessages: (state) => {
       state.error = null;
       state.passwordUpdateMessage = null;
-    }
+      state.isLogout = null;
+      state.deleteEmployee = null;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -166,7 +189,6 @@ export const employeeSlice = createSlice({
         state.error = action.payload;
         state.isLoading = false;
       })
-      // 
       .addCase(setNewPasswordAsync.pending, (state) => {
         state.status = "loading";
         state.isLoading = true;
@@ -177,6 +199,26 @@ export const employeeSlice = createSlice({
         state.isLoading = false;
       })
       .addCase(setNewPasswordAsync.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+        state.isLoading = false;
+      })
+      .addCase(deleteEmployeeAsync.pending, (state) => {
+        state.status = "loading";
+        state.isLoading = true;
+      })
+      .addCase(deleteEmployeeAsync.fulfilled, (state, action) => {
+        state.status = "idle";
+        const index = state.allemployee.employee.findIndex(
+          (item) => item._id === action.payload.id
+        );
+
+        state.allemployee.employee.splice(index, 1);
+
+        state.deleteEmployee = action.payload;
+        state.isLoading = false;
+      })
+      .addCase(deleteEmployeeAsync.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
         state.isLoading = false;
@@ -191,9 +233,13 @@ export const selectEmployeeStatus = (state) => state.employee.status;
 export const selectEmployeeError = (state) => state.employee.error;
 export const selectEmployeeIsLoading = (state) => state.employee.isLoading;
 export const selectAllEmployee = (state) => state.employee.allemployee;
-export const selectPasswordUpdate = (state) => state.employee.passwordUpdateMessage;
+export const selectPasswordUpdate = (state) =>
+  state.employee.passwordUpdateMessage;
 export const selectLogout = (state) => state.employee.isLogout;
-export const selectResetPasswordLink = (state) => state.employee.resetPasswordLinkStatus;
-export const selectResetPasswordStatus=(state)=>state.employee.resetPasswordStatus
+export const selectResetPasswordLink = (state) =>
+  state.employee.resetPasswordLinkStatus;
+export const selectResetPasswordStatus = (state) =>
+  state.employee.resetPasswordStatus;
+export const selectDeleteEmployee = (state) => state.employee.deleteEmployee;
 
 export default employeeSlice.reducer;

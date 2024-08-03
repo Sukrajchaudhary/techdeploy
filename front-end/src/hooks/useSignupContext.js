@@ -3,7 +3,7 @@ import { useState } from "react";
 const useSignupContext = () => {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState(null);
-  const [error, setError] = useState(null);
+  const [error, setErrors] = useState(null);
 
   const signup = async (userData) => {
     setLoading(true);
@@ -22,11 +22,11 @@ const useSignupContext = () => {
       if (!response.ok) {
         try {
           const errorData = await response.json();
-          setError(errorData.message || "An error occurred");
+          setErrors(errorData.message || "An error occurred");
         } catch (e) {
           // Fallback to plain text if JSON parsing fails
           const errorText = await response.text();
-          setError(errorText || "An error occurred");
+          setErrors(errorText || "An error occurred");
         }
         return;
       }
@@ -34,13 +34,13 @@ const useSignupContext = () => {
       const result = await response.json();
       setData(result);
     } catch (error) {
-      setError(error.message || "An unexpected error occurred");
+      setErrors(error.message || "An unexpected error occurred");
     } finally {
       setLoading(false);
     }
   };
 
-  return { loading, data,setError, error, signup };
+  return { loading, data,setErrors, error, signup };
 };
 
 export default useSignupContext;

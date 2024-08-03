@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Dialog,
   DialogBackdrop,
@@ -9,14 +9,36 @@ import {
 } from "@headlessui/react";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 
-const Modal = () => {
-  const [open, setOpen] = useState(true);
+const Modal = ({
+  actionName,
+  title,
+  desc,
+  cancelOption,
+  dangerAction,
+  showModal,
+}) => {
+  const [open, setOpen] = useState(false);
+  const handleAction = () => {
+    setOpen(false);
+    dangerAction();
+  };
+  const handleCancle = () => {
+    setOpen(false);
+    cancelOption();
+  };
+  useEffect(() => {
+    if (showModal) {
+      setOpen(true);
+    } else {
+      setOpen(false);
+    }
+  }, [showModal]);
 
   return (
     <Dialog open={open} onClose={setOpen} className="relative z-10">
       <DialogBackdrop
         transition
-        className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in"
+        className="fixed inset-0  bg-gray-500 bg-opacity-75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in"
       />
 
       <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
@@ -38,14 +60,10 @@ const Modal = () => {
                     as="h3"
                     className="text-base font-semibold leading-6 text-gray-900"
                   >
-                    Deactivate account
+                    {title}
                   </DialogTitle>
                   <div className="mt-2">
-                    <p className="text-sm text-gray-500">
-                      Are you sure you want to deactivate your account? All of
-                      your data will be permanently removed. This action cannot
-                      be undone.
-                    </p>
+                    <p className="text-sm text-gray-500">{desc}</p>
                   </div>
                 </div>
               </div>
@@ -53,15 +71,15 @@ const Modal = () => {
             <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
               <button
                 type="button"
-                onClick={() => setOpen(false)}
+                onClick={handleAction}
                 className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
               >
-                Deactivate
+                {actionName}
               </button>
               <button
                 type="button"
                 data-autofocus
-                onClick={() => setOpen(false)}
+                onClick={handleCancle}
                 className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
               >
                 Cancel

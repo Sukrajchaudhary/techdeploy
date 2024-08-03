@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect ,useState} from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Signup from "./pages/Authentication/Signup";
 import Login from "./pages/Authentication/Login";
@@ -9,7 +9,7 @@ import ViewEmployee from "./components/Employee/ViewEmployee";
 import DefaultLayout from "./layout/DefaultLayout";
 import EmployeeSetting from "./components/Employee/EmployeeSetting";
 import ProtectedRoutes from "./pages/Authentication/ProtectedRoutes";
-
+import PreLoader from "./Common/PreLoader";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -62,7 +62,22 @@ const router = createBrowserRouter([
 ]);
 
 function App() {
-  return <RouterProvider router={router} />;
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Simulate loading delay
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 2000); // Adjust time as needed
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  return (
+    <>
+      {loading ?<PreLoader/> : <RouterProvider router={router} />}
+    </>
+  );
 }
 
 export default App;

@@ -97,9 +97,9 @@ const EmployeeSetting = () => {
   return (
     <section className="h-full bg-main">
       <h6 className="font-bold sm:text-2xl text-xl">Settings</h6>
-      <div className="mt-8 flex sm:flex-row flex-col gap-8 max-w-[500px]">
+      <div className="mt-8 flex sm:flex-row flex-col gap-8 w-full md:max-w-[600px]">
         <form
-          className="flex-1 rounded-lg border border-gray-200 bg-white p-6"
+          className="flex-1 rounded-lg border border-gray-200 bg-white p-2"
           onSubmit={handleSubmit}
         >
           <p className="mb-4 text-t-lg font-medium">Change your Password</p>

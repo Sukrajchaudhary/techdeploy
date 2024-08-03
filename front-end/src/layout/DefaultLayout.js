@@ -4,14 +4,17 @@ import HederMenu from "../components/Header/HederMenu";
 import { useDispatch} from "react-redux";
 import {
  
-  getEmployeeInfoAsync
+  getEmployeeInfoAsync,
+  getAllEmployeeAsync
+
 } from "../features/Employee/employeeSlice";
 const DefaultLayout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-
+// fetch All userinformation nad all Employee
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(getEmployeeInfoAsync())
+    dispatch(getAllEmployeeAsync())
   }, [dispatch]);
   return (
     <div className="dark:bg-boxdark-2 dark:text-bodydark">

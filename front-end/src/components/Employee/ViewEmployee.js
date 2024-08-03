@@ -1,46 +1,58 @@
-import { Eye, Trash2 } from "lucide-react";
-import React, { useEffect } from "react";
+import { Trash2 } from "lucide-react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import {
   selectAllEmployee,
   selectEmployeeError,
   selectEmployeeIsLoading,
-  getAllEmployeeAsync,
   resetMessages,
+  deleteEmployeeAsync,
+  selectDeleteEmployee,
 } from "../../features/Employee/employeeSlice";
 import Loadding from "../../Common/Loadding";
 import toast from "react-hot-toast";
+import Modal from "../../Common/Modal";
+
 const ViewEmployee = () => {
+  const [OpenModal, setOpenModal] = useState(-1);
   const location = useLocation();
   const dispatch = useDispatch();
   const fetchEmployeeError = useSelector(selectEmployeeError);
   const isLoadding = useSelector(selectEmployeeIsLoading);
   const allEmployee = useSelector(selectAllEmployee);
-  useEffect(() => {
-    dispatch(getAllEmployeeAsync());
-  }, []);
+  const fetchResponse = useSelector(selectDeleteEmployee);
 
   useEffect(() => {
-    if (fetchEmployeeError?.error) {
-      toast.error(fetchEmployeeError?.error);
+    if (fetchEmployeeError?.error?.message) {
+      toast.error(fetchEmployeeError?.error?.message);
+      dispatch(resetMessages());
+    }
+    if (fetchResponse?.message) {
+      toast.success(fetchResponse?.message);
       dispatch(resetMessages());
     }
     return () => {
       dispatch(resetMessages());
     };
-  }, [fetchEmployeeError]);
+  }, [fetchEmployeeError, fetchResponse]);
+
+  const handleDelete = (id) => {
+    dispatch(deleteEmployeeAsync({ id }));
+  };
+
   return (
     <>
       {isLoadding && <Loadding />}
       <section>
         <h6 className="font-bold sm:text-2xl text-xl">{location.pathname}</h6>
 
+        {allEmployee?.employee?.length === 0 && <p>No any Employee</p>}
         <ul className="mt-6 flex overflow-y-scroll md:overflow-y-auto w-full border-gray-200 text-gray-400">
-          <li className="border-brand-red text-brand-red flex cursor-pointer items-center justify-between gap-2 font-medium border-b px-3 py-2.5 first:pl-0 ">
+          <li className="border-brand-red text-brand-red flex cursor-pointer items-center justify-between gap-2 font-medium border-b px-3 py-2.5 first:pl-0">
             All
             <span className="bg-red-500 text-white py-1 px-2 font-bold rounded-md flex justify-center items-center text-xs">
-              {allEmployee?.employee.length}
+              {allEmployee?.total}
             </span>
           </li>
         </ul>
@@ -85,42 +97,42 @@ const ViewEmployee = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {allEmployee?.employee.map((employee, index) => (
-                    <>
-                      {" "}
-                      <tr
-                        key={employee._id}
-                        className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted"
-                      >
-                        <td className="p-4 text-left align-middle">
-                          <div>{employee.username}</div>
-                        </td>
-                        <td className="p-4 text-left align-middle">
-                          <div>{employee.email}</div>
-                        </td>
-                        <td className="p-4 text-left align-middle">
-                          <div className="text-center text-red-700  rounded-lg text-sm font-semibold">
-                            {employee.role}
-                          </div>
-                        </td>
-
-                        <td className="p-4 text-left align-middle">
-                          <div className="text-center">
-                            <Link to={`/ViewIntrenShipDetailsPage/${index}`}>
-                              {" "}
-                              <button className=" p-1 px-2  text-black rounded-md">
-                                <Eye />
-                              </button>
-                            </Link>{" "}
-                            <button className="p-1 px-2  text-white rounded-md">
-                              <Trash2 color="#f10e0e" />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    </>
+                  {allEmployee?.employee?.map((employee, index) => (
+                    <tr
+                      key={employee?._id}
+                      className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted"
+                    >
+                      <td className="p-4 text-left align-middle">
+                        <div>{employee?.username}</div>
+                      </td>
+                      <td className="p-4 text-left align-middle">
+                        <div>{employee?.email}</div>
+                      </td>
+                      <td className="p-4 text-left align-middle">
+                        <div className="text-center text-red-700 rounded-lg text-sm font-semibold">
+                          {employee?.role}
+                        </div>
+                      </td>
+                      <td className="p-4 text-left align-middle">
+                        <Modal
+                          title={`Delete ${employee?.username}`}
+                          desc="Are You Sure ?"
+                          actionName="Delete"
+                          dangerAction={(e) => handleDelete(employee?._id)}
+                          showModal={OpenModal === employee?._id}
+                          cancelOption={() => setOpenModal(-1)}
+                        />
+                        <div className="text-center">
+                          <button
+                            onClick={() => setOpenModal(employee?._id)}
+                            className="p-1 px-2 text-white rounded-md"
+                          >
+                            <Trash2 color="#f10e0e" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
                   ))}
-                  {/* Add more rows as needed */}
                 </tbody>
               </table>
             </div>

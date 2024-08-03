@@ -14,7 +14,6 @@ const ProfileDropdown = ({ employeeInfo }) => {
   const profileDropdown = useRef();
   const dispatch=useDispatch();
   const fetchResponse=useSelector(selectLogout);
-  console.log(fetchResponse)
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (
@@ -34,6 +33,8 @@ const ProfileDropdown = ({ employeeInfo }) => {
 const handleLogout=()=>{
   dispatch(logotAsync())
 }
+
+
 useEffect(()=>{
 if(fetchResponse?.message){
   toast.success(fetchResponse?.message);
@@ -45,7 +46,7 @@ return(()=>{
 },[fetchResponse,dispatch])
   return (
     <>
-    {fetchResponse?.status && <Navigate to="/" replace={true}/>}
+    {fetchResponse?.message && <Navigate to="/" replace={true}/>}
     <div className="flex items-center">
       <div className="flex items-center ms-3">
         <div>
