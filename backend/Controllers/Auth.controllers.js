@@ -159,7 +159,7 @@ exports.sendResetPasswordLink = async (req, res) => {
     await user.save();
 
     const subject = "Reset Password Link";
-    const link = `http://localhost:3000/Reset-Password?email=${email}&resetPasswordToken=${resetPasswordToken}`;
+    const link = `https://techjar.onrender.com/Reset-Password?email=${email}&resetPasswordToken=${resetPasswordToken}`;
     const html = `<p>Click here to reset your password: <a href="${link}">Reset Password</a></p>`;
 
     await SendMail({ email, subject, html });
