@@ -1,7 +1,7 @@
 export function getEmployeeInfo() {
   return new Promise(async (resolve, reject) => {
     try {
-      const response = await fetch("http://localhost:8080/api/v1/own", {
+      const response = await fetch("https://techjar.onrender.com/api/v1/own", {
         method: "GET",
         headers: {
           Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
@@ -27,7 +27,7 @@ export function getEmployeeInfo() {
 export function getAllEmployee() {
   return new Promise(async (resolve, reject) => {
     try {
-      const response = await fetch("http://localhost:8080/api/v1/allemployee", {
+      const response = await fetch("https://techjar.onrender.com/api/v1/allemployee", {
         method: "GET",
         headers: {
           Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
@@ -53,7 +53,7 @@ export function updatePassword(values) {
   return new Promise(async (resolve, reject) => {
     try {
       const response = await fetch(
-        "http://localhost:8080/api/v1/update-password",
+        "https://techjar.onrender.com/api/v1/update-password",
         {
           method: "POST",
           headers: {
@@ -81,7 +81,7 @@ export function updatePassword(values) {
 export function logot() {
   return new Promise(async (resolve, reject) => {
     try {
-      const response = await fetch("http://localhost:8080/api/v1/logout", {
+      const response = await fetch("https://techjar.onrender.com/api/v1/logout", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -106,7 +106,7 @@ export function logot() {
 export function resetPasswordLink(values) {
   return new Promise(async (resolve, reject) => {
     try {
-      const response = await fetch("http://localhost:8080/api/v1/reset-link", {
+      const response = await fetch("https://techjar.onrender.com/api/v1/reset-link", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -132,7 +132,7 @@ export function resetPasswordLink(values) {
 export function setNewPassword(values) {
   return new Promise(async (resolve, reject) => {
     try {
-      const response = await fetch("http://localhost:8080/api/v1/setpassword", {
+      const response = await fetch("https://techjar.onrender.com/api/v1/setpassword", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -157,7 +157,7 @@ export function setNewPassword(values) {
 export function deleteEmployee(id) {
   return new Promise(async (resolve, reject) => {
     try {
-      const response = await fetch("http://localhost:8080/api/v1/delete", {
+      const response = await fetch("https://techjar.onrender.com/api/v1/delete", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
